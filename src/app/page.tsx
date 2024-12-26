@@ -45,6 +45,7 @@ export default function DailyVideosPage() {
         return url.searchParams.get('v') || '';
       } catch (err) {
         console.error('Invalid YouTube URL:', link);
+        console.log(err);
         return '';
       }
     };
