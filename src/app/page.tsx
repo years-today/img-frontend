@@ -1,101 +1,150 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import { useEffect, useState } from 'react';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+interface Video {
+    author: string;
+    description: string;
+    link: string;
+    vidId: string;
+    title: string;
+    // Using camelCase for datePublished
+    datePublished: string;
 }
+
+export default function DailyVideosPage() {
+    const [videos, setVideos] = useState<Video[]>([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(true);
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
+      const fetchVideos = async () => {
+        try {
+          // Update the URL to your actual endpoint
+          const response = await fetch('http://127.0.0.1:5050/api/videos/today');
+          const { videos } = await response.json();
+          setVideos(videos);
+        } catch (error) {
+          console.error('Error fetching videos:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchVideos();
+    }, []);
+  
+    /**
+     * Helper to extract the YouTube video ID from a standard
+     * 'https://www.youtube.com/watch?v=xyz' link.
+     */
+    const getVideoIdFromLink = (link: string): string => {
+      try {
+        const url = new URL(link);
+        return url.searchParams.get('v') || '';
+      } catch (err) {
+        console.error('Invalid YouTube URL:', link);
+        return '';
+      }
+    };
+  
+    const handleNextVideo = () => {
+      if (!videos.length) return;
+      // Randomly pick a new index from the entire list
+      const randomIndex = Math.floor(Math.random() * videos.length);
+      setCurrentIndex(randomIndex);
+      setIsPlaying(true);
+    };
+  
+    const handlePreviousVideo = () => {
+      // If you wanted a purely random selection for 'Previous' as well,
+      // you could do the same random approach. For example:
+      // setCurrentIndex(Math.floor(Math.random() * videos.length));
+      // or simply move backward by 1:
+      setCurrentIndex((prev) => {
+        if (prev === 0) return videos.length - 1;
+        return prev - 1;
+      });
+      setIsPlaying(true);
+    };
+  
+    const handlePausePlay = () => {
+      setIsPlaying(!isPlaying);
+    };
+  
+    const handleGoToStart = () => {
+      // For a real "go to start" feature, you'd use the YouTube Player API
+      // to seek to 0. Here, we'll just reset isPlaying to force reload.
+      setIsPlaying(false);
+      setTimeout(() => setIsPlaying(true), 200);
+    };
+  
+    if (loading) {
+      return (
+        <div className="flex h-screen items-center justify-center">
+          <p>Loading daily videos...</p>
+        </div>
+      );
+    }
+  
+    if (!videos.length) {
+      return (
+        <div className="flex h-screen items-center justify-center">
+          <p>No videos available today.</p>
+        </div>
+      );
+    }
+  
+    // Current video link -> parse out the ID
+    const currentVideoLink = videos[currentIndex].link;
+    const currentVideoId = getVideoIdFromLink(currentVideoLink);
+  
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen py-8">
+        <h1 className="text-2xl font-bold mb-6">Daily Videos</h1>
+  
+        <div className="w-full max-w-xl aspect-video mb-6">
+          <iframe
+            className="w-full h-full rounded"
+            src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=${isPlaying ? 1 : 0}`}
+            title="YouTube video player"
+            allowFullScreen
+          />
+        </div>
+  
+        {/* Controls */}
+        <div className="flex space-x-4">
+          <button
+            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            onClick={handlePreviousVideo}
+          >
+            Previous
+          </button>
+  
+          <button
+            className={`px-4 py-2 rounded text-white ${
+              isPlaying ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
+            }`}
+            onClick={handlePausePlay}
+          >
+            {isPlaying ? 'Pause' : 'Play'}
+          </button>
+  
+          <button
+            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            onClick={handleNextVideo}
+          >
+            Next (Random)
+          </button>
+        </div>
+  
+        <button
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          onClick={handleGoToStart}
+        >
+          Go to Start
+        </button>
+      </div>
+    );
+  }
