@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+// import { useRouter, useSearchParams } from 'next/navigation'; 
 
 interface Video {
     author: string;
@@ -8,14 +9,15 @@ interface Video {
     link: string;
     vidId: string;
     title: string;
-    // Using camelCase for datePublished
     datePublished: string;
 }
 
 export default function DailyVideosPage() {
 
     const [videos, setVideos] = useState<Video[]>([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [remainingVideos, setRemainingVideos] = useState<Video[]>([]);
+    const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
+    const [history, setHistory] = useState<Video[]>([]);
     const [isPlaying, setIsPlaying] = useState(true);
     const [loading, setLoading] = useState(true);
 
@@ -29,6 +31,11 @@ export default function DailyVideosPage() {
                 const { videos } = await response.json();
 
                 setVideos(videos);
+                setRemainingVideos(videos);
+
+                if (videos.length > 0) {
+                    selectRandomVideo(videos, videos);
+                }
 
             } catch (error) {
                 console.error('Error fetching videos:', error);
@@ -48,9 +55,7 @@ export default function DailyVideosPage() {
     const getVideoIdFromLink = (link: string): string => {
         try {
             const url = new URL(link);
-
             return url.searchParams.get('v') || '';
-
         } catch (err) {
             console.error('Invalid YouTube URL:', link);
             console.log(err);
@@ -58,13 +63,33 @@ export default function DailyVideosPage() {
         }
     };
 
-    const handleNextVideo = () => {
-        if (!videos.length) return;
-        // Randomly pick a new index from the entire list
-        const randomIndex = Math.floor(Math.random() * videos.length);
+    const selectRandomVideo = (allVideos: Video[], availableVideos: Video[]) => {
+        if (availableVideos.length === 0) {
+            // TODO: batch load new videos from archive
 
-        setCurrentIndex(randomIndex);
+            setCurrentVideo(null);
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * availableVideos.length);
+        const selectedVideo = availableVideos[randomIndex];
+
+        setCurrentVideo(selectedVideo);
+        setHistory(prevHistory => [...prevHistory, selectedVideo]); //shorthand - append to list
+        setRemainingVideos(availableVideos.filter((_, index) => index !== randomIndex));
         setIsPlaying(true);
+    };
+
+
+    const handleNextVideo = () => {
+        if (remainingVideos.length === 0) {
+
+            // load new ones here?
+            alert('All videos for today watched!');
+            return
+        };
+
+        selectRandomVideo(videos, remainingVideos);
     };
 
     const handlePreviousVideo = () => {
@@ -72,11 +97,21 @@ export default function DailyVideosPage() {
         // you could do the same random approach. For example:
         // setCurrentIndex(Math.floor(Math.random() * videos.length));
         // or simply move backward by 1:
-        setCurrentIndex((prev) => {
-            if (prev === 0) return videos.length - 1;
-            return prev - 1;
-        });
-        setIsPlaying(true);
+
+        if (history.length <= 1) {
+            return;
+        }
+
+        const newHistory = [...history];
+        // remove current from history
+
+        const lastVideo = newHistory.pop();
+        if (lastVideo) {
+            setRemainingVideos(prev => [...prev, lastVideo]); // Optionally, add back to remainingVideos
+            setCurrentVideo(newHistory[newHistory.length - 1]);
+            setHistory(newHistory);
+            setIsPlaying(true);
+        }
     };
 
     const handlePausePlay = () => {
@@ -98,7 +133,7 @@ export default function DailyVideosPage() {
         );
     }
 
-    if (!videos.length) {
+    if (!currentVideo) {
         return (
             <div className="flex h-screen items-center justify-center">
                 <p>No videos available today.</p>
@@ -107,7 +142,7 @@ export default function DailyVideosPage() {
     }
 
     // Current video link -> parse out the ID
-    const currentVideoLink = videos[currentIndex].link;
+    const currentVideoLink = currentVideo.link;
     const currentVideoId = getVideoIdFromLink(currentVideoLink);
 
     return (
@@ -128,6 +163,7 @@ export default function DailyVideosPage() {
                 <button
                     className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
                     onClick={handlePreviousVideo}
+                    disabled={history.length <= 1}
                 >
                     Previous
                 </button>
@@ -143,6 +179,7 @@ export default function DailyVideosPage() {
                 <button
                     className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
                     onClick={handleNextVideo}
+                    disabled={remainingVideos.length === 0}
                 >
                     Next (Random)
                 </button>
