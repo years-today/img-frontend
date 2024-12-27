@@ -68,7 +68,7 @@ export default function DailyVideosPage() {
         };
 
         fetchVideos();
-    }, [searchParams]);
+    }, []);
 
     useEffect(() => {
         console.log('remainingVideos changed:', remainingVideos);
