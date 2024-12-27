@@ -70,6 +70,10 @@ export default function DailyVideosPage() {
         fetchVideos();
     }, [searchParams]);
 
+    useEffect(() => {
+        console.log('remainingVideos changed:', remainingVideos);
+      }, [remainingVideos]);
+
     /**
      * Helper to extract the YouTube video ID from a standard
      * 'https://www.youtube.com/watch?v=xyz' link.
@@ -91,8 +95,6 @@ export default function DailyVideosPage() {
             setCurrentVideo(null);
             return;
         }
-        
-        console.log(remainingVideos);
 
         const randomIndex = Math.floor(Math.random() * availableVideos.length);
         const selectedVideo = availableVideos[randomIndex];
