@@ -41,9 +41,7 @@ export default function DailyVideosPage() {
                         setCurrentVideo(initialVideo);
                         setHistory([initialVideo]);
                         setRemainingVideos(videos.filter((video: { id: string; }) => video.id !== videoIdParam));
-                    }
-                    else
-                    {
+                    } else {
                         // If not found, create a fallback Video object
                         const fallbackVideo: Video = {
                             author: 'Unknown Author',
@@ -93,6 +91,8 @@ export default function DailyVideosPage() {
             setCurrentVideo(null);
             return;
         }
+        
+        console.log(remainingVideos);
 
         const randomIndex = Math.floor(Math.random() * availableVideos.length);
         const selectedVideo = availableVideos[randomIndex];
