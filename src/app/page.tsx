@@ -27,7 +27,7 @@ export default function DailyVideosPage() {
         const fetchVideos = async () => {
             try {
                 // Update the URL to your actual endpoint
-                const response = await fetch('http://44.222.201.1:5050/api/videos/today');
+                const response = await fetch('https://api.years.today/api/videos/today');
                 const { videos } = await response.json();
                 setVideos(videos);
                 setRemainingVideos(videos);
