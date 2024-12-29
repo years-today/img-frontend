@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import necessary hooks
 import copy from 'copy-to-clipboard';
+import YouTube from 'react-youtube';
 
 interface Video {
     author: string;
@@ -22,6 +23,7 @@ export default function DailyVideosPage() {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     const searchParams = useSearchParams();
+    const [player, setPlayer] = useState<any>(null);
 
     useEffect(() => {
         const fetchVideos = async () => {
@@ -69,6 +71,7 @@ export default function DailyVideosPage() {
 
         fetchVideos();
     }, []);
+    // potential bug: https://chatgpt.com/share/676e5c6f-0798-8001-86ae-16f74bd7a128
 
     useEffect(() => {
         console.log('remainingVideos changed:', remainingVideos);
@@ -91,6 +94,7 @@ export default function DailyVideosPage() {
 
     const selectRandomVideo = (allVideos: Video[], availableVideos: Video[]) => {
         if (availableVideos.length === 0) {
+
             // TODO: batch load new videos from archive
             setCurrentVideo(null);
             return;
@@ -138,14 +142,23 @@ export default function DailyVideosPage() {
     };
 
     const handlePausePlay = () => {
+        if (player) {
+            if (isPlaying) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        }
         setIsPlaying(!isPlaying);
     };
 
     const handleGoToStart = () => {
         // For a real "go to start" feature, you'd use the YouTube Player API
         // to seek to 0. Here, we'll just reset isPlaying to force reload.
-        setIsPlaying(false);
-        setTimeout(() => setIsPlaying(true), 200);
+
+        if (player) {
+            player.seekTo(0);
+        }
     };
 
     const handleShare = () => {
@@ -183,11 +196,28 @@ export default function DailyVideosPage() {
     const currentVideoLink = currentVideo.link;
     const currentVideoId = getVideoIdFromLink(currentVideoLink);
 
+    const onReady = (event: any) => {
+        setPlayer(event.target);
+    }
+
+    const opts = {
+        height: '390',
+        width: '640',
+        playerVars: {
+            autoplay: isPlaying ? 1 : 0,
+            controls: 0,
+            rel: 0,
+            modestbranding: 1,
+            iv_load_policy: 3,         // Disable annotations
+            playsinline: 1,
+        },
+    }
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen py-8 relative">
             {/* Header with Share Button */}
             <header className="w-full max-w-xl flex justify-between items-center mb-6 px-4">
-                <h1 className="text-2xl font-bold">Daily Videos</h1>
+                <h1 className="text-2xl font-bold">years.today</h1>
                 <button
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                     onClick={handleShare}
@@ -197,12 +227,18 @@ export default function DailyVideosPage() {
             </header>
 
             <div className="w-full max-w-xl aspect-video mb-6">
-                <iframe
+
+                <YouTube
+                    videoId={currentVideoId}
+                    opts={opts}
+                    onReady={onReady}
+                    />
+                {/* <iframe
                     className="w-full h-full rounded"
                     src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=${isPlaying ? 1 : 0}`}
                     title="YouTube video player"
                     allowFullScreen
-                />
+                /> */}
             </div>
 
             {/* Controls */}
