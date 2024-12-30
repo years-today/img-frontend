@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import necessary hooks
 import copy from 'copy-to-clipboard';
-import YouTube from 'react-youtube';
+import YouTube, { YouTubePlayer, YouTubeEvent } from 'react-youtube';
 
 interface Video {
     author: string;
@@ -23,7 +23,7 @@ export default function DailyVideosPage() {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [player, setPlayer] = useState<any>(null);
+    const [player, setPlayer] = useState< YouTubePlayer >(null);
 
     useEffect(() => {
         const fetchVideos = async () => {
@@ -196,7 +196,7 @@ export default function DailyVideosPage() {
     const currentVideoLink = currentVideo.link;
     const currentVideoId = getVideoIdFromLink(currentVideoLink);
 
-    const onReady = (event: any) => {
+    const onReady = (event: YouTubeEvent ) => {
         setPlayer(event.target);
     }
 
