@@ -256,7 +256,7 @@ export default function DailyVideosPage() {
             {/* ---------- Video Container: aspect ratio locked ---------- */}
             <div
                 id="player-container"
-                className="w-full max-w-xl aspect-video mb-6 relative"
+                className="w-[1440] max-w-xl aspect-video mb-6 relative overflow-hidden"
             >
                 {/* Make the YouTube iframe absolutely fill the container */}
                 <div className="absolute inset-0">
