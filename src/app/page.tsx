@@ -244,6 +244,7 @@ export default function DailyVideosPage() {
                     <div
                         className="screen-container absolute inset-0 z-10"
                         style={{ pointerEvents: 'all' }} // blocks user clicks
+                        onClick={handlePausePlay}
                     >
                     </div>
                 </div>
