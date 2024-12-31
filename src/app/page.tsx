@@ -223,7 +223,6 @@ export default function DailyVideosPage() {
     const onReady = (event: YouTubeEvent ) => {
         setPlayer(event.target);
         event.target.setVolume(10);
-
     }
 
 
