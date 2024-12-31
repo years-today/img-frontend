@@ -237,7 +237,7 @@ export default function DailyVideosPage() {
                         videoId={currentVideoId}
                         opts={opts}
                         onReady={onReady}
-                        className="w-full h-full" // ensures the iframe fills its parent
+                        className="absolute w-[300%] h-full left-[-100%]" // ensures the iframe fills its parent
                     />
 
                     {/* ---------- OVERLAY ---------- */}
