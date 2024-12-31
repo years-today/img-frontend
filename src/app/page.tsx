@@ -201,18 +201,17 @@ export default function DailyVideosPage() {
     }
 
     const opts = {
-        height: '390',
-        width: '640',
+        width: '100%',
+        height: '100%',
         playerVars: {
             autoplay: isPlaying ? 1 : 0,
             controls: 0,
             rel: 0,
             modestbranding: 1,
-            iv_load_policy: 3,         // Disable annotations
+            iv_load_policy: 3,
             playsinline: 1,
-            showinfo: 0
         },
-    }
+    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen py-8 relative">
@@ -227,22 +226,30 @@ export default function DailyVideosPage() {
                 </button>
             </header>
 
-            <div className="w-full max-w-xl aspect-video mb-6">
-
-                <YouTube
-                    videoId={currentVideoId}
-                    opts={opts}
-                    onReady={onReady}
+            {/* ---------- Video Container: aspect ratio locked ---------- */}
+            <div
+                id="player-container"
+                className="w-full max-w-xl aspect-video mb-6 relative"
+            >
+                {/* Make the YouTube iframe absolutely fill the container */}
+                <div className="absolute inset-0">
+                    <YouTube
+                        videoId={currentVideoId}
+                        opts={opts}
+                        onReady={onReady}
+                        className="w-full h-full" // ensures the iframe fills its parent
                     />
-                {/* <iframe
-                    className="w-full h-full rounded"
-                    src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=${isPlaying ? 1 : 0}`}
-                    title="YouTube video player"
-                    allowFullScreen
-                /> */}
+
+                    {/* ---------- OVERLAY ---------- */}
+                    <div
+                        className="screen-container absolute inset-0 z-10"
+                        style={{ pointerEvents: 'all' }} // blocks user clicks
+                    >
+                    </div>
+                </div>
             </div>
 
-            {/* Controls */}
+            {/* ---------- Controls ---------- */}
             <div className="flex space-x-4 mb-4">
                 <button
                     className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
