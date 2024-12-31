@@ -73,7 +73,7 @@ export default function DailyVideosPage() {
     }, []);
     // potential bug: https://chatgpt.com/share/676e5c6f-0798-8001-86ae-16f74bd7a128
 
-    // logging DELETE
+    // logging (DELETE later)
     useEffect(() => {
         console.log('remainingVideos changed:', remainingVideos);
     }, [remainingVideos]);
@@ -222,9 +222,9 @@ export default function DailyVideosPage() {
 
     const onReady = (event: YouTubeEvent ) => {
         setPlayer(event.target);
+        setIsPlaying(false);
         event.target.setVolume(10);
     }
-
 
     const opts = {
         width: '100%',
