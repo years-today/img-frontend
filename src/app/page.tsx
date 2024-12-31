@@ -19,7 +19,7 @@ export default function DailyVideosPage() {
     const [remainingVideos, setRemainingVideos] = useState<Video[]>([]);
     const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
     const [history, setHistory] = useState<Video[]>([]);
-    const [isPlaying, setIsPlaying] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -48,7 +48,7 @@ export default function DailyVideosPage() {
                         const fallbackVideo: Video = {
                             author: 'Unknown Author',
                             description: 'This video is not available in today\'s list.',
-                            link: `https://www.youtube.com/watch?v=${videoIdParam}`,
+                            link: `https://www.youtube-nocookie.com/watch?v=${videoIdParam}`,
                             id: videoIdParam,
                             title: 'Unknown Video',
                             datePublished: 'Unknown Date',
@@ -210,6 +210,7 @@ export default function DailyVideosPage() {
             modestbranding: 1,
             iv_load_policy: 3,         // Disable annotations
             playsinline: 1,
+            showinfo: 0
         },
     }
 
