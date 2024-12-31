@@ -73,9 +73,33 @@ export default function DailyVideosPage() {
     }, []);
     // potential bug: https://chatgpt.com/share/676e5c6f-0798-8001-86ae-16f74bd7a128
 
+    // logging DELETE
     useEffect(() => {
         console.log('remainingVideos changed:', remainingVideos);
-      }, [remainingVideos]);
+    }, [remainingVideos]);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (!player) return;
+    
+            if (e.key === 'ArrowUp') {
+                // Increase volume by 10
+                const currentVolume = player.getVolume();
+                const newVolume = Math.min(currentVolume + 10, 100);
+                player.setVolume(newVolume);
+            } else if (e.key === 'ArrowDown') {
+                // Decrease volume by 10
+                const currentVolume = player.getVolume();
+                const newVolume = Math.max(currentVolume - 10, 0);
+                player.setVolume(newVolume);
+            }
+        };
+    
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [player]);
 
     /**
      * Helper to extract the YouTube video ID from a standard
@@ -198,7 +222,10 @@ export default function DailyVideosPage() {
 
     const onReady = (event: YouTubeEvent ) => {
         setPlayer(event.target);
+        event.target.setVolume(10);
+
     }
+
 
     const opts = {
         width: '100%',
