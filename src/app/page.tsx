@@ -222,9 +222,18 @@ export default function DailyVideosPage() {
 
     const onReady = (event: YouTubeEvent ) => {
         setPlayer(event.target);
-        setIsPlaying(false);
+        // setIsPlaying(false);
         event.target.setVolume(10);
     }
+
+    const onStateChange = (event: YouTubeEvent) => {
+        // YouTube player states: 1=playing, 2=paused, etc.
+        if (event.data === 1) {
+            setIsPlaying(true);
+        } else if (event.data === 2) {
+            setIsPlaying(false);
+        }
+    };
 
     const opts = {
         width: '100%',
@@ -263,6 +272,7 @@ export default function DailyVideosPage() {
                         videoId={currentVideoId}
                         opts={opts}
                         onReady={onReady}
+                        onStateChange={onStateChange}
                         className="absolute w-[300%] h-full left-[-100%]" // ensures the iframe fills its parent
                     />
 
