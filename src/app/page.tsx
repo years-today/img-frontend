@@ -128,6 +128,22 @@ export default function DailyVideosPage() {
     }
     const checkViews = (count: string): string | null => count === '-1' ? null : count;
 
+    const formatDate = (dateString: string): string | null => {
+        const date = new Date(dateString);
+        
+        if (isNaN(date.getTime())) {
+            return null;
+        }
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        
+        const day = date.getUTCDate(); // 1 - 31
+        const month = months[date.getUTCMonth()]; // 0 - 11
+        const year = date.getUTCFullYear();
+        
+        return `${day} ${month} ${year}`;
+    }
+
 
     const selectRandomVideo = (allVideos: Video[], availableVideos: Video[]) => {
         if (availableVideos.length === 0) {
@@ -302,6 +318,9 @@ export default function DailyVideosPage() {
                 )}
                 {checkViews(currentVideo.viewCount) && (
                     <h3>views {checkViews(currentVideo.viewCount)}</h3>
+                )}
+                {formatDate(currentVideo.datePublished) && (
+                    <h3>{formatDate(currentVideo.datePublished)}</h3>
                 )}
 
                 <button
