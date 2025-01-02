@@ -16,15 +16,16 @@ interface Video {
 }
 
 export default function DailyVideosPage() {
-    const [videos, setVideos] = useState<Video[]>([]);
     const [remainingVideos, setRemainingVideos] = useState<Video[]>([]);
     const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
     const [backStack, setBackStack] = useState<Video[]>([]);
     const [fwdStack, setFwdStack] = useState<Video[]>([]);
     const [isPlaying, setIsPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
+
     const router = useRouter();
     const searchParams = useSearchParams();
+
     const [player, setPlayer] = useState< YouTubePlayer >(null);
 
     useEffect(() => {
@@ -33,7 +34,6 @@ export default function DailyVideosPage() {
                 // Update the URL to your actual endpoint
                 const response = await fetch('https://api.years.today/api/videos/today');
                 const { videos } = await response.json();
-                setVideos(videos);
                 setRemainingVideos(videos);
 
                 const videoIdParam = searchParams.get('videoId');
@@ -54,7 +54,7 @@ export default function DailyVideosPage() {
                             id: videoIdParam,
                             title: 'Unknown Video',
                             datePublished: 'Unknown Date',
-                            viewCount: '11'
+                            viewCount: '-1'
                         };
                         setCurrentVideo(fallbackVideo);
                     }
@@ -124,10 +124,10 @@ export default function DailyVideosPage() {
 
     const getNumberFromTitle = (title: string ): string | null => {
         const match = title.match(/\d{4}/);
-  
-        // If a match is found, return it; otherwise, return null.
         return match ? match[0] : null;
     }
+    const checkViews = (count: string): string | null => count === '-1' ? null : count;
+
 
     const selectRandomVideo = (allVideos: Video[], availableVideos: Video[]) => {
         if (availableVideos.length === 0) {
@@ -296,8 +296,14 @@ export default function DailyVideosPage() {
             {/* Header with Share Button */}
             <header className="w-full max-w-xl flex justify-between items-center mb-6 px-4">
                 <h1 className="text-2xl font-bold">years.today</h1>
-                <h3>title {getNumberFromTitle(currentVideo.title)}</h3>
-                <h3>views {currentVideo.viewCount}</h3>
+
+                {getNumberFromTitle(currentVideo.title) && (
+                    <h3>title {getNumberFromTitle(currentVideo.title)}</h3>
+                )}
+                {checkViews(currentVideo.viewCount) && (
+                    <h3>views {checkViews(currentVideo.viewCount)}</h3>
+                )}
+
                 <button
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                     onClick={handleShare}
