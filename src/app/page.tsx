@@ -12,13 +12,15 @@ interface Video {
     id: string;
     title: string;
     datePublished: string;
+    viewCount: string;
 }
 
 export default function DailyVideosPage() {
     const [videos, setVideos] = useState<Video[]>([]);
     const [remainingVideos, setRemainingVideos] = useState<Video[]>([]);
     const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
-    const [history, setHistory] = useState<Video[]>([]);
+    const [backStack, setBackStack] = useState<Video[]>([]);
+    const [fwdStack, setFwdStack] = useState<Video[]>([]);
     const [isPlaying, setIsPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
@@ -41,7 +43,7 @@ export default function DailyVideosPage() {
                     const initialVideo = videos.find((video: { id: string; }) => video.id === videoIdParam);
                     if (initialVideo) {
                         setCurrentVideo(initialVideo);
-                        setHistory([initialVideo]);
+                        setBackStack([]);
                         setRemainingVideos(videos.filter((video: { id: string; }) => video.id !== videoIdParam));
                     } else {
                         // If not found, create a fallback Video object
@@ -52,6 +54,7 @@ export default function DailyVideosPage() {
                             id: videoIdParam,
                             title: 'Unknown Video',
                             datePublished: 'Unknown Date',
+                            viewCount: '11'
                         };
                         setCurrentVideo(fallbackVideo);
                     }
@@ -76,8 +79,11 @@ export default function DailyVideosPage() {
     // logging (DELETE later)
     useEffect(() => {
         console.log('remainingVideos changed:', remainingVideos);
+        console.log('backStack:', backStack);
+        console.log('fwdStack:', fwdStack);
     }, [remainingVideos]);
 
+    //Volume
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!player) return;
@@ -116,6 +122,13 @@ export default function DailyVideosPage() {
         }
     };
 
+    const getNumberFromTitle = (title: string ): string | null => {
+        const match = title.match(/\d{4}/);
+  
+        // If a match is found, return it; otherwise, return null.
+        return match ? match[0] : null;
+    }
+
     const selectRandomVideo = (allVideos: Video[], availableVideos: Video[]) => {
         if (availableVideos.length === 0) {
 
@@ -128,7 +141,7 @@ export default function DailyVideosPage() {
         const selectedVideo = availableVideos[randomIndex];
 
         setCurrentVideo(selectedVideo);
-        setHistory(prevHistory => [...prevHistory, selectedVideo]); // Append to history
+        setBackStack(prevHistory => [...prevHistory, selectedVideo]); // Append to backStack
         setRemainingVideos(availableVideos.filter((_, index) => index !== randomIndex));
         setIsPlaying(true);
 
@@ -137,33 +150,63 @@ export default function DailyVideosPage() {
     };
 
     const handleNextVideo = () => {
-        if (remainingVideos.length === 0) {
-            // Load new ones here or notify the user
-            alert('All videos for today watched!');
-            return;
-        }
+        if (!currentVideo) return;
 
-        selectRandomVideo(videos, remainingVideos);
+        // If user previously clicked “Back” and we have something in forwardStack,
+        // we should use that “next” item so that going forward returns to the same video.
+        if (fwdStack.length > 0) {
+            // 1) Move currentVideo onto the backStack
+            setBackStack((prev) => [...prev, currentVideo]);
+            // 2) Pop from the forwardStack to get the new current
+            const nextVideo = fwdStack[fwdStack.length - 1];
+            setFwdStack((prev) => prev.slice(0, prev.length - 1));
+            // 3) Set it as current
+            setCurrentVideo(nextVideo);
+            setIsPlaying(true);
+            // router.replace(...) if you want the URL to reflect nextVideo.id
+            router.replace(`?videoId=${nextVideo.id}`);
+
+        } else {
+            // No “forward” video is waiting; pick a random from remaining
+            if (remainingVideos.length === 0) {
+                alert('All videos for today watched!');
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * remainingVideos.length);
+            const selectedVideo = remainingVideos[randomIndex];
+
+            // 1) Move currentVideo onto the backStack
+            setBackStack((prev) => [...prev, currentVideo]);
+            // 2) Clear the forwardStack because we’re branching to a new path
+            setFwdStack([]);
+            // 3) Set new currentVideo
+            setCurrentVideo(selectedVideo);
+            setRemainingVideos((prev) =>
+                prev.filter((_, idx) => idx !== randomIndex)
+            );
+            setIsPlaying(true);
+            router.replace(`?videoId=${selectedVideo.id}`);
+        }
     };
 
     const handlePreviousVideo = () => {
-        if (history.length <= 1) {
-            return;
-        }
+        // If there’s nothing in backStack, we can’t go “back”
+        if (backStack.length === 0 || !currentVideo) return;
+      
+        // 1) Push currentVideo onto the forwardStack
+        setFwdStack((prev) => [...prev, currentVideo]);
+      
+        // 2) Pop from backStack to become the new current
+        const prevVideo = backStack[backStack.length - 1];
+        setBackStack((prev) => prev.slice(0, prev.length - 1));
+      
+        // 3) Set as current
+        setCurrentVideo(prevVideo);
+        setIsPlaying(true);
+        router.replace(`?videoId=${prevVideo.id}`);
+      };
 
-        const newHistory = [...history];
-        const lastVideo = newHistory.pop();
-        if (lastVideo) {
-            setRemainingVideos(prev => [...prev, lastVideo]); // Optionally, add back to remainingVideos
-            setCurrentVideo(newHistory[newHistory.length - 1]);
-            setHistory(newHistory);
-            setIsPlaying(true);
-
-            // Update the URL with the previous videoId
-            const previousVideoId = newHistory[newHistory.length - 1].id;
-            router.replace(`?videoId=${previousVideoId}`);
-        }
-    };
 
     const handlePausePlay = () => {
         if (player) {
@@ -253,6 +296,8 @@ export default function DailyVideosPage() {
             {/* Header with Share Button */}
             <header className="w-full max-w-xl flex justify-between items-center mb-6 px-4">
                 <h1 className="text-2xl font-bold">years.today</h1>
+                <h3>title {getNumberFromTitle(currentVideo.title)}</h3>
+                <h3>views {currentVideo.viewCount}</h3>
                 <button
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                     onClick={handleShare}
@@ -291,7 +336,7 @@ export default function DailyVideosPage() {
                 <button
                     className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
                     onClick={handlePreviousVideo}
-                    disabled={history.length <= 1}
+                    disabled={backStack.length === 0}
                 >
                     Previous
                 </button>
