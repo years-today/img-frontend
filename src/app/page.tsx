@@ -159,7 +159,7 @@ export default function DailyVideosPage() {
         setCurrentVideo(selectedVideo);
         setBackStack(prevHistory => [...prevHistory, selectedVideo]); // Append to backStack
         setRemainingVideos(availableVideos.filter((_, index) => index !== randomIndex));
-        setIsPlaying(true);
+        // setIsPlaying(false);
 
         // Update the URL with the new videoId
         router.replace(`?videoId=${selectedVideo.id}`);
