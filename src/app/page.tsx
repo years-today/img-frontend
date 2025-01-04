@@ -63,7 +63,7 @@ export default function DailyVideosPage() {
 
                 // If no videoId param, select a random video
                 if (videos.length > 0) {
-                    moveToNextVideo({
+                    await moveToNextVideo({
                         skipBackStack: true, // we’re picking the *first* video at load
                         allVideos: videos
                     });
@@ -141,13 +141,14 @@ export default function DailyVideosPage() {
     }
 
 
-    const moveToNextVideo = (options?: {
+    const moveToNextVideo = async (options?: {
         skipBackStack?: boolean; // for the very first random selection
         allVideos?: Video[];     // only needed if you're loading from the entire array
     }) => {
 
-        // console.log(fwdStack);
-        // console.log(backStack);
+        console.log("remaining ", remainingVideos);
+        console.log("fwd ", fwdStack);
+        console.log("back ", backStack);
 
         // 1) If no currentVideo is set, it’s the first time
         //    (or you explicitly want to skip backStack), so we skip the push
@@ -169,10 +170,27 @@ export default function DailyVideosPage() {
         // 3) Otherwise, pick a random from `remainingVideos`.
         //    (If you want to load from the entire list or some subset, 
         //     you can pick from options?.allVideos if provided.)
-        const pool = options?.allVideos ?? remainingVideos;
+        let pool = options?.allVideos ?? remainingVideos;
+
+        // 4) If pool is empty, fetch from archive:
         if (pool.length === 0) {
-            alert('All videos for today watched!');
-            return;
+            try {
+                const response = await fetch('https://api.years.today/api/videos/archive');
+                const data = await response.json();
+
+                if (!data || !data.videos || data.videos.length === 0) {
+                    alert('No archived videos found!');
+                    return; // Or handle differently
+                }
+
+                // We now have some new archived videos
+                setRemainingVideos(data.videos);
+                pool = data.videos; // update the local variable so we pick from it below
+            } catch (err) {
+                console.error('Error fetching from archive:', err);
+                alert('Failed to fetch archive videos.');
+                return;
+            }
         }
 
         // Optionally push the *old* currentVideo onto backStack, unless we skip
