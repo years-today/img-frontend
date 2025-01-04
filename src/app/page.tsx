@@ -162,7 +162,7 @@ export default function DailyVideosPage() {
             const nextVideo = fwdStack[fwdStack.length - 1];
             setFwdStack((prev) => prev.slice(0, prev.length - 1));
             setCurrentVideo(nextVideo);
-            setIsPlaying(false);
+            setIsPlaying(true);
             router.replace(`?videoId=${nextVideo.id}`);
             return;
         }
@@ -205,7 +205,11 @@ export default function DailyVideosPage() {
         setCurrentVideo(selectedVideo);
         setRemainingVideos((prev) => prev.filter((_, i) => i !== randomIndex));
         setFwdStack([]); // clear forwardStack because we have branched
-        setIsPlaying(false);
+        if (shouldSkipBackStack) { 
+            setIsPlaying(false) 
+        } else { 
+            setIsPlaying(true)
+        }
         router.replace(`?videoId=${selectedVideo.id}`);
     };
 
