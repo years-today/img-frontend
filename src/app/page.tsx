@@ -315,7 +315,7 @@ export default function DailyVideosPage() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen py-8 relative">
+        <div className="flex flex-col items-center justify-center min-h-screen py-8 relative bg-gray-850">
             {/* Header with Share Button */}
             <header className="w-full max-w-xl flex justify-between items-center mb-6 px-4">
                 <h1 className="text-2xl font-bold">years.today</h1>
