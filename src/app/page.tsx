@@ -79,13 +79,6 @@ export default function DailyVideosPage() {
     }, []);
     // potential bug: https://chatgpt.com/share/676e5c6f-0798-8001-86ae-16f74bd7a128
 
-    // logging (DELETE later)
-    useEffect(() => {
-        console.log('remainingVideos changed:', remainingVideos);
-        console.log('backStack:', backStack);
-        console.log('fwdStack:', fwdStack);
-    }, [remainingVideos, backStack, fwdStack]);
-
     //Volume
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -197,70 +190,6 @@ export default function DailyVideosPage() {
         setIsPlaying(false);
         router.replace(`?videoId=${selectedVideo.id}`);
     };
-
-
-
-
-    // const selectRandomVideo = (allVideos: Video[], availableVideos: Video[]) => {
-    //     if (availableVideos.length === 0) {
-
-    //         // TODO: batch load new videos from archive
-    //         setCurrentVideo(null);
-    //         return;
-    //     }
-
-    //     const randomIndex = Math.floor(Math.random() * availableVideos.length);
-    //     const selectedVideo = availableVideos[randomIndex];
-
-    //     setCurrentVideo(selectedVideo);
-    //     setBackStack(prevHistory => [...prevHistory, selectedVideo]); // Append to backStack
-    //     setRemainingVideos(availableVideos.filter((_, index) => index !== randomIndex));
-    //     // setIsPlaying(false);
-
-    //     // Update the URL with the new videoId
-    //     router.replace(`?videoId=${selectedVideo.id}`);
-    // };
-
-    // const handleNextVideo = () => {
-    //     if (!currentVideo) return;
-
-    //     // If user previously clicked “Back” and we have something in forwardStack,
-    //     // we should use that “next” item so that going forward returns to the same video.
-    //     if (fwdStack.length > 0) {
-    //         // 1) Move currentVideo onto the backStack
-    //         setBackStack((prev) => [...prev, currentVideo]);
-    //         // 2) Pop from the forwardStack to get the new current
-    //         const nextVideo = fwdStack[fwdStack.length - 1];
-    //         setFwdStack((prev) => prev.slice(0, prev.length - 1));
-    //         // 3) Set it as current
-    //         setCurrentVideo(nextVideo);
-    //         setIsPlaying(true);
-    //         // router.replace(...) if you want the URL to reflect nextVideo.id
-    //         router.replace(`?videoId=${nextVideo.id}`);
-
-    //     } else {
-    //         // No “forward” video is waiting; pick a random from remaining
-    //         if (remainingVideos.length === 0) {
-    //             alert('All videos for today watched!');
-    //             return;
-    //         }
-
-    //         const randomIndex = Math.floor(Math.random() * remainingVideos.length);
-    //         const selectedVideo = remainingVideos[randomIndex];
-
-    //         // 1) Move currentVideo onto the backStack
-    //         setBackStack((prev) => [...prev, currentVideo]);
-    //         // 2) Clear the forwardStack because we’re branching to a new path
-    //         setFwdStack([]);
-    //         // 3) Set new currentVideo
-    //         setCurrentVideo(selectedVideo);
-    //         setRemainingVideos((prev) =>
-    //             prev.filter((_, idx) => idx !== randomIndex)
-    //         );
-    //         setIsPlaying(true);
-    //         router.replace(`?videoId=${selectedVideo.id}`);
-    //     }
-    // };
 
     const handlePreviousVideo = () => {
         // If there’s nothing in backStack, we can’t go “back”
