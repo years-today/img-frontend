@@ -364,13 +364,20 @@ export default function DailyVideosPage() {
             </div>
 
             {/* ---------- Controls ---------- */}
-            <div className="flex space-x-4 mb-4">
+            <div className="flex space-x-4 mb-4 border-[0.5px] border-red-500 p-2">
                 <button
-                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                    className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-400"
                     onClick={handlePreviousVideo}
                     disabled={backStack.length === 0}
                 >
                     Previous
+                </button>
+
+                <button
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    onClick={handleGoToStart}
+                >
+                    Rewind
                 </button>
 
                 <button
@@ -382,7 +389,14 @@ export default function DailyVideosPage() {
                 </button>
 
                 <button
-                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    // dummy button
+                >
+                    Fast Forward
+                </button>
+
+                <button
+                    className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-400"
                     onClick={() => moveToNextVideo()}
                     // disabled={fwdStack.length === 0}
                 >
@@ -390,12 +404,6 @@ export default function DailyVideosPage() {
                 </button>
             </div>
 
-            <button
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                onClick={handleGoToStart}
-            >
-                Go to Start
-            </button>
         </div>
     );
 }
