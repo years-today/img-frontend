@@ -364,7 +364,7 @@ export default function DailyVideosPage() {
             </div>
 
             {/* ---------- Controls ---------- */}
-            <div className="flex space-x-4 mb-4 border-[0.5px] border-red-500 p-2">
+            <div className="flex space-x-4 mb-4 border-[1.5px] border-gray-400 p-2">
                 <button
                     className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-400"
                     onClick={handlePreviousVideo}
