@@ -32,8 +32,24 @@ export default function DailyVideosPage() {
         const fetchVideos = async () => {
             try {
                 // Update the URL to your actual endpoint
-                const response = await fetch('https://api.years.today/api/videos/today');
-                const { videos } = await response.json();
+                const response = await fetch('https://api.years.today/api/videos/todaytest');
+                let { videos } = await response.json();
+
+                // 2) If empty, fallback to archive
+                if (!videos || videos.length === 0) {
+                    console.log('No videos in today\'s list; fetching from archive...');
+                    const archiveResponse = await fetch('https://api.years.today/api/videos/archive');
+                    const { videos: archiveVideos } = await archiveResponse.json();
+
+                    if (!archiveVideos || archiveVideos.length === 0) {
+                        console.log('No videos found in either today or archive.');
+                        setLoading(false);
+                        return;
+                    } else {
+                        videos = archiveVideos;
+                    }
+                }
+
                 setRemainingVideos(videos);
 
                 const videoIdParam = searchParams.get('videoId');
