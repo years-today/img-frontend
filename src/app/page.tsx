@@ -267,6 +267,14 @@ export default function DailyVideosPage() {
         }
     };
 
+    const handleFastForward = () => {
+        if (player) {
+          const currentTime = player.getCurrentTime();
+          // Move 10 seconds ahead
+          player.seekTo(currentTime + 10, true);
+        }
+      };
+
     const handleShare = () => {
         if (!currentVideo) return;
 
@@ -406,7 +414,7 @@ export default function DailyVideosPage() {
 
                 <button
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    // dummy button
+                    onClick={handleFastForward}
                 >
                     Fast Forward
                 </button>
