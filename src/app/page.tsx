@@ -184,8 +184,6 @@ export default function DailyVideosPage() {
         }
 
         // 3) Otherwise, pick a random from `remainingVideos`.
-        //    (If you want to load from the entire list or some subset, 
-        //     you can pick from options?.allVideos if provided.)
         let pool = options?.allVideos ?? remainingVideos;
 
         // 4) If pool is empty, fetch from archive:
