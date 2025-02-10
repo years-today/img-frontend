@@ -291,7 +291,7 @@ export default function DailyVideosPage() {
     if (loading) {
         return (
             <div className="flex h-screen items-center justify-center">
-                <p>Loading daily videos...</p>
+                <p>Loading daily videos... (if you can read this, service is in maintenance)</p>
             </div>
         );
     }
