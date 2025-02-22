@@ -6,16 +6,6 @@ import YouTube, { YouTubePlayer, YouTubeEvent } from 'react-youtube';
 import copy from 'copy-to-clipboard';
 import { Video } from './index';
 
-// interface Video {
-//     author: string;
-//     description: string;
-//     link: string;
-//     id: string;
-//     title: string;
-//     datePublished: string;
-//     viewCount: string;
-// }
-
 export default function VideoSection() {
     const [remainingVideos, setRemainingVideos] = useState<Video[]>([]);
     const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
