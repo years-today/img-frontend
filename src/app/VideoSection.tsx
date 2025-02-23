@@ -87,11 +87,15 @@ export default function VideoSection() {
     }, []);
     // potential bug: https://chatgpt.com/share/676e5c6f-0798-8001-86ae-16f74bd7a128
 
-    //Volume
+    //Key Controls
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!player) return;
-    
+
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+            }
+            
             if (e.key === 'ArrowUp') {
                 // Increase volume by 10
                 const currentVolume = player.getVolume();
@@ -104,6 +108,13 @@ export default function VideoSection() {
                 const newVolume = Math.max(currentVolume - 10, 0);
                 player.setVolume(newVolume);
                 setVolume(newVolume);
+            } else if (e.key === 'ArrowLeft') {
+                // Rewind by 10 seconds
+                e.preventDefault();
+                handlePreviousVideo();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                moveToNextVideo();
             }
         };
     
