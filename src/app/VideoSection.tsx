@@ -18,6 +18,7 @@ export default function VideoSection() {
     const searchParams = useSearchParams();
 
     const [player, setPlayer] = useState< YouTubePlayer >(null);
+    const [volume, setVolume] = useState(10);
 
     useEffect(() => {
         const fetchVideos = async () => {
@@ -96,11 +97,13 @@ export default function VideoSection() {
                 const currentVolume = player.getVolume();
                 const newVolume = Math.min(currentVolume + 10, 100);
                 player.setVolume(newVolume);
+                setVolume(newVolume);
             } else if (e.key === 'ArrowDown') {
                 // Decrease volume by 10
                 const currentVolume = player.getVolume();
                 const newVolume = Math.max(currentVolume - 10, 0);
                 player.setVolume(newVolume);
+                setVolume(newVolume);
             }
         };
     
@@ -302,7 +305,7 @@ export default function VideoSection() {
     const onReady = (event: YouTubeEvent ) => {
         setPlayer(event.target);
         // setIsPlaying(false);
-        event.target.setVolume(10);
+        event.target.setVolume(volume);
     }
 
     const onStateChange = (event: YouTubeEvent) => {
