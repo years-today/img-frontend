@@ -348,7 +348,7 @@ export default function VideoSection() {
                 <h1 className="text-2xl font-bold">years.today</h1>
 
                 {getNumberFromTitle(currentVideo.title) && (
-                    <h3>title {getNumberFromTitle(currentVideo.title)}</h3>
+                    <h3>IMG {getNumberFromTitle(currentVideo.title)}</h3>
                 )}
                 {checkViews(currentVideo.viewCount) && (
                     <h3>views {checkViews(currentVideo.viewCount)}</h3>
