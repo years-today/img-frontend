@@ -1,7 +1,7 @@
 'use client';
 
 
-import { useEffect, useState, RefObject, useRef } from 'react';
+import { useEffect, useState, RefObject } from 'react';
 import styles from './SectionIndicator.module.css';
 
 const sections = ['Video', 'About', 'Contact'];
