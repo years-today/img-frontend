@@ -1,0 +1,14 @@
+/* SectionIndicator.module.css */
+.sectionIndicator {
+    transition: color 0.3s ease, font-size 0.3s ease; /* Smooth transition for color and font size */
+}
+
+.active {
+    color: white; /* Active section color */
+    font-size: 1.5rem; /* Increase font size for active section */
+}
+
+.inactive {
+    color: gray; /* Inactive section color */
+    font-size: 1rem; /* Normal font size for inactive sections */
+}

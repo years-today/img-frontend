@@ -22,17 +22,23 @@ body {
     padding: 0;
     height: 100vh;
     overflow: hidden;  /* Change from scroll to hidden */
-  }
+}
   
-  .snap-container {
+.snap-container {
     height: 100vh;
     scroll-snap-type: y mandatory;
     overflow-y: auto;  /* Change from scroll to auto */
     scroll-behavior: smooth;
-  }
-  
-  .snap-section {
+}
+
+.snap-section {
     scroll-snap-align: start;
     min-height: 100vh;  /* Change from height to min-height */
     width: 100%;
-  }
+}
+
+.fixed {
+    position: fixed;
+    z-index: 1000;
+}
+  
