@@ -1,15 +1,19 @@
-import { useEffect, useState, RefObject } from 'react';
+'use client';
+
+
+import { useEffect, useState, RefObject, useRef } from 'react';
 import styles from './SectionIndicator.module.css';
 
 const sections = ['Video', 'About', 'Contact'];
 
-
-
 interface SectionIndicatorProps {
     containerRef: RefObject<HTMLDivElement | null>;
+    videoRef: RefObject<HTMLDivElement | null>;
+    aboutRef: RefObject<HTMLDivElement | null>;
+    contactRef: RefObject<HTMLDivElement | null>;
 }
 
-export default function SectionIndicator({ containerRef }: SectionIndicatorProps) {
+export default function SectionIndicator({ containerRef, videoRef, aboutRef, contactRef }: SectionIndicatorProps) {
     const [currentSection, setCurrentSection] = useState(sections[0]);
 
     const handleScroll = () => {
@@ -33,6 +37,22 @@ export default function SectionIndicator({ containerRef }: SectionIndicatorProps
         }
     };
 
+    const scrollToSection = (section: string) => {
+        switch (section) {
+            case 'Video':
+                videoRef.current?.scrollIntoView({ behavior: 'smooth' });
+                break;
+            case 'About':
+                aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
+                break;
+            case 'Contact':
+                contactRef.current?.scrollIntoView({ behavior: 'smooth' });
+                break;
+            default:
+                break;
+        }
+    };
+
 
     useEffect(() => {
         const container = containerRef.current;
@@ -51,6 +71,7 @@ export default function SectionIndicator({ containerRef }: SectionIndicatorProps
             {sections.map((section) => (
                 <h2 key={section} 
                     className={`${styles.sectionIndicator} ${currentSection === section ? styles.active : styles.inactive}`}
+                    onClick={() => scrollToSection(section)}
                 >
                     {section}
                 </h2>
